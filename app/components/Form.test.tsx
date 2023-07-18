@@ -2,11 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form } from './Form'
 
-const response = {
-    current: { temp_c: 10, humidity: 20, wind_mph: 30 },
-    location: { name: 'Manchester' }
-}
-
 const mockSave = jest.fn()
 const mockClear = jest.fn()
 
@@ -24,7 +19,11 @@ describe('Form', () => {
         global.fetch = jest.fn(() =>
             Promise.resolve({
                 ok: true,
-                json: () => Promise.resolve(response)
+                json: () =>
+                    Promise.resolve({
+                        current: { temp_c: 10, humidity: 20, wind_mph: 30 },
+                        location: { name: 'Manchester' }
+                    })
             })
         ) as jest.Mock
 
