@@ -66,7 +66,7 @@ export const Form: FC<FormProps> = ({ saveWeather, clearWeather }) => {
 
     return (
         <form
-            className="bg-white shadow-md rounded px-8 pt-8 pb-12 m-2 flex flex-col md:flex-row items-end md:w-3/4 w-full"
+            className="bg-white shadow-md rounded px-8 pt-8 pb-12 m-2 flex flex-col md:flex-row items-end md:w-3/4 w-full max-w-md"
             onSubmit={handleSubmit}
         >
             <div className="w-full relative">
