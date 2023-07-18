@@ -10,13 +10,6 @@ const response = {
 const mockSave = jest.fn()
 const mockClear = jest.fn()
 
-global.fetch = jest.fn(() =>
-    Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(response)
-    })
-) as jest.Mock
-
 describe('Form', () => {
     const setup = () => {
         return render(<Form saveWeather={mockSave} clearWeather={mockClear} />)
@@ -28,6 +21,13 @@ describe('Form', () => {
     })
 
     it('should handle save', async () => {
+        global.fetch = jest.fn(() =>
+            Promise.resolve({
+                ok: true,
+                json: () => Promise.resolve(response)
+            })
+        ) as jest.Mock
+
         setup()
         await userEvent.type(
             screen.getByLabelText('What is the current weather in...'),
@@ -40,5 +40,19 @@ describe('Form', () => {
             wind_mph: 30,
             name: 'Manchester'
         })
+    })
+
+    it('should handle no matching location', async () => {
+        global.fetch = jest.fn(() =>
+            Promise.resolve({
+                ok: false,
+                json: () => Promise.resolve({ error: { message: 'No matching location found.' } })
+            })
+        ) as jest.Mock
+
+        setup()
+        await userEvent.type(screen.getByLabelText('What is the current weather in...'), 'z')
+        await userEvent.click(screen.getByRole('button', { name: 'Submit' }))
+        expect(screen.getByText('No matching location found.')).toBeVisible()
     })
 })
