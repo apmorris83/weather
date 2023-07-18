@@ -13,7 +13,7 @@ export const Weather: FC<WeatherProps> = ({ weather }) => {
             <h1 className="text-gray-700 text-sm font-bold mb-2">{`The current weather in ${name} is:`}</h1>
             <p className="text-gray-700 text-sm">{`Temperature: ${temp_c}`}</p>
             <p className="text-gray-700 text-sm">{`Humidity: ${humidity}`}</p>
-            <p className="text-gray-700 text-sm">{`Wind speed (MPH): ${wind_mph}`}</p>
+            <p className="text-gray-700 text-sm">{`Wind speed: ${wind_mph}mph`}</p>
         </div>
     )
 }
