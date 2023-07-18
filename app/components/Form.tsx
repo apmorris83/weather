@@ -1,4 +1,4 @@
-import { FC, useState, FormEvent, useEffect } from 'react'
+import { FC, useState, FormEvent, useEffect, useCallback } from 'react'
 import { CurrentWeather } from '../types/currentWeather'
 
 type FormProps = {
@@ -19,44 +19,50 @@ export const Form: FC<FormProps> = ({ saveWeather, clearWeather }) => {
         }
     }, [clearWeather, location])
 
-    const fetchWeather = async (location: string) => {
-        setLoading(true)
-        setHasError(false)
+    const fetchWeather = useCallback(
+        async (location: string) => {
+            setLoading(true)
+            setHasError(false)
 
-        try {
-            const apiKey = '6d714243321e4166ae7131017231607'
-            const response = await fetch(
-                `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}`
-            )
+            try {
+                const apiKey = '6d714243321e4166ae7131017231607'
+                const response = await fetch(
+                    `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}`
+                )
 
-            if (!response.ok) {
-                const errorResponse = await response.json()
-                setHasError(true)
-                setError(errorResponse.error.message)
-            } else {
-                const {
-                    current: { temp_c, humidity, wind_mph },
-                    location: { name }
-                } = await response.json()
-                saveWeather({ temp_c, humidity, wind_mph, name })
+                if (!response.ok) {
+                    const errorResponse = await response.json()
+                    setHasError(true)
+                    setError(errorResponse.error.message)
+                } else {
+                    const {
+                        current: { temp_c, humidity, wind_mph },
+                        location: { name }
+                    } = await response.json()
+                    saveWeather({ temp_c, humidity, wind_mph, name })
+                }
+
+                setLoading(false)
+            } catch (error) {
+                console.log('Error fetching weather data:', error)
+                setLoading(false)
             }
+        },
+        [saveWeather]
+    )
 
-            setLoading(false)
-        } catch (error) {
-            console.log('Error fetching weather data:', error)
-            setLoading(false)
-        }
-    }
+    const handleSubmit = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault()
+            setHasError(false)
+            fetchWeather(location)
+        },
+        [fetchWeather, location]
+    )
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        setHasError(false)
-        fetchWeather(location)
-    }
-
-    const handleChange = (event: FormEvent<HTMLInputElement>) => {
+    const handleChange = useCallback((event: FormEvent<HTMLInputElement>) => {
         setLocation(event.currentTarget.value)
-    }
+    }, [])
 
     return (
         <form
